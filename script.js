@@ -1,9 +1,27 @@
-//your JS code here. If required.
-const output = document.getElementById("output");
-const btn = document.getElementById("download-images-button");
+function downloadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image's URL: ${url}`));
+    img.src = url;
+  });
+}
 
-const images = [
-  { url: "https://picsum.photos/id/237/200/300" },
-  { url: "https://picsum.photos/id/238/200/300" },
-  { url: "https://picsum.photos/id/239/200/300" },
-];
+function displayImages(images) {
+  output.innerHTML = '';
+  images.forEach(img => {
+    output.appendChild(img);
+  });
+}
+
+btn.addEventListener('click', () => {
+  const downloadPromises = images.map(image => downloadImage(image.url));
+
+  Promise.all(downloadPromises)
+    .then(images => {
+      displayImages(images);
+    })
+    .catch(error => {
+      console.error(error.message);
+    });
+}); 
